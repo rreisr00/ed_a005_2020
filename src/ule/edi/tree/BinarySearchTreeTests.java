@@ -107,6 +107,11 @@ public class BinarySearchTreeTests {
 
 		}
 
+		@Test
+		public void testContains(){
+			Assert.assertEquals(true, ejemplo.contains(15));
+			Assert.assertEquals(false, ejemplo.contains(13));
+		}
 	
 	}
 

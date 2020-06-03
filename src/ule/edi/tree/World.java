@@ -37,7 +37,7 @@ import java.util.List;
  * 
  * contiene un bosque (forest) en "", otro en "0", dos dragones y una princesa en "00" y
  * un castillo en "01".
- * @param <T>
+ * //@param <T>
  * 
  */
 public class World extends AbstractBinaryTreeADT<LinkedList<Entity>> {
@@ -126,10 +126,42 @@ public class World extends AbstractBinaryTreeADT<LinkedList<Entity>> {
 	 * @param e entidad a insertar.
 	 */
 	public void insert(String address, Entity e) {
-		
 		//TODO implementar el metodo
-			
-		
+		LinkedList<Entity> entities;
+		String nextAddress = "";
+		if (this.isEmpty()) {
+			entities= new LinkedList<Entity>();
+			this.setContent(entities);
+			this.setWorldLeft(createEmptyWorld());
+			this.setWorldRight(createEmptyWorld());
+		}
+
+		if(address.length() >= 2) {
+			if(this.getContent().isEmpty()) {
+				this.getContent().add(new Entity(0));
+			}
+			for(int i = 1; i < address.length(); i++){
+				nextAddress = nextAddress + address.charAt(i);
+			}
+		}else if(address.equals("")){
+			if(this.getContent().contains(e)){
+				int index = 0;
+				long count;
+				while(this.getContent().get(index).equals(e)){
+					index++;
+				}
+				count = this.getContent().get(index).getCount();
+				this.getContent().get(index).setCount(count + e.getCount());
+			}else{
+				this.getContent().add(e);
+			}
+		}
+
+		if(address.charAt(0) == '0'){
+			this.getWorldLeft().insert(nextAddress, e);
+		}else if(address.charAt(0) == '1'){
+			this.getWorldRight().insert(nextAddress, e);
+		}
 	}
 
 	
@@ -142,8 +174,21 @@ public class World extends AbstractBinaryTreeADT<LinkedList<Entity>> {
 	 */
 	public long countEntity(int type) {
 		// TODO Implementar el método	
-		
-		return 0;
+		LinkedList<Entity> entities = new LinkedList<Entity>();
+		Entity thisEntity = new Entity(type);
+		long count = 0;
+		if(!this.isEmpty()){
+			if(this.getContent().contains(thisEntity)){
+				int index = 0;
+				while(this.getContent().get(index).equals(thisEntity)){
+					index++;
+				}
+				count = this.getContent().get(index).getCount() + this.getWorldLeft().countEntity(type) + this.getWorldRight().countEntity(type);
+			}else{
+				count += this.getWorldLeft().countEntity(type) + this.getWorldRight().countEntity(type);
+			}
+		}
+		return count;
 	}
 	
 	
@@ -167,16 +212,66 @@ public class World extends AbstractBinaryTreeADT<LinkedList<Entity>> {
      *     
      *     Al llamar a arbol1.countAccesiblePrincess(lista) siendo lista una lista vacía, 
      *     devolverá 8 y la lista contendrá (“10”, “111”).
-	 * @param List<String> donde dejará las direcciones a los nodos que contienen princesas accesibles.
+	 * @param lista donde dejará las direcciones a los nodos que contienen princesas accesibles.
 	 * @return el número de princesas accesibles situadas 
 	 */
 	public long countAccesiblePrincess(List<String> lista){
 		// TODO IMPLEMENTAR EL MÉTODO
-		
-		return 0;
-	  
-		
-	}	
+		long count[] = {0};
+		boolean wasDragon = false;
+		String camino = "";
+		if(!this.isEmpty()){
+			this.countAccesiblePrincessRec(count, lista, camino, wasDragon);
+		}
+		return count[0];
+	}
+
+
+	private void countAccesiblePrincessRec(long count[], List<String> lista, String camino, boolean WasDragon){
+		int index = 0;
+		if(!this.isEmpty()){
+			if(this.getContent().contains(Entity.dragons(1))) {
+				if (this.getContent().contains(Entity.princesses(1))) {
+					while(!this.getContent().get(index).equals(Entity.princesses(1))){
+						if (this.getContent().get(index).equals(Entity.dragons(1))) {
+							WasDragon = true;
+						} else if (this.getContent().get(index).equals(Entity.castles(1))) {
+							WasDragon = false;
+						}
+						index++;
+					}
+					if(!WasDragon){
+						lista.add(camino);
+						count[0] += this.getContent().get(index).getCount();
+					}
+				}
+			}else{
+				if(this.getContent().contains(Entity.princesses(1))){
+					while(!this.getContent().get(index).equals(Entity.princesses(1))){
+						if (this.getContent().get(index).equals(Entity.castles(1))) {
+							WasDragon = false;
+						}
+						index++;
+					}
+					if(!WasDragon){
+						lista.add(camino);
+						count[0] += this.getContent().get(index).getCount();
+					}
+				}
+
+			}
+			for (int i = 0; i < this.getContent().size(); i++) {
+				if (this.getContent().get(i).equals(Entity.dragons(1))) {
+					WasDragon = true;
+				} else if (this.getContent().get(i).equals(Entity.castles(1))) {
+					WasDragon = false;
+				}
+			}
+
+			this.getWorldLeft().countAccesiblePrincessRec(count, lista, camino + "0", WasDragon);
+			this.getWorldRight().countAccesiblePrincessRec(count, lista, camino + "1", WasDragon);
+		}
+	}
 	
 	
 	
