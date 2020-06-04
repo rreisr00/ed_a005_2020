@@ -404,7 +404,7 @@ public class BinarySearchTreeImpl<T extends Comparable<? super T>> extends
 				if (this.getRightBST().isEmpty()) {
 					decendents = ((int) this.getLeftBST().getTag("decendents")) + 1;
 				} else if (this.getLeftBST().isEmpty()) {
-					decendents = ((int) this.getLeftBST().getTag("decendents")) + 1;
+					decendents = ((int) this.getRightBST().getTag("decendents")) + 1;
 				} else {
 					decendents = ((int) this.getRightBST().getTag("decendents")) + ((int) this.getLeftBST().getTag("decendents")) + 2;
 				}
@@ -433,13 +433,13 @@ public class BinarySearchTreeImpl<T extends Comparable<? super T>> extends
 	public Iterator<T> iteratorWidth() {
 		//	TODO Implementar método
 		// puede implementarse creando una lista con el recorrido en anchura de los elementos del árbol y devolver el iterador de dicha lista
-		LinkedList<T> result = createTreeListRec();
+		LinkedList<T> result = new LinkedList<T>();
+		createTreeListRec(result);
 		return result.iterator();
 	}	
 
-	private LinkedList<T> createTreeListRec(){
-		LinkedList<T> list = new LinkedList<T>();
-		if(this.isEmpty()) {
+	private void createTreeListRec(LinkedList<T> list){
+		if(!this.isEmpty()) {
 			if (this.father == null) {
 				list.add(this.getContent());
 			}
@@ -447,19 +447,18 @@ public class BinarySearchTreeImpl<T extends Comparable<? super T>> extends
 
 				list.add(this.getLeftBST().getContent());
 				list.add(this.getRightBST().getContent());
-				list.addAll(this.getLeftBST().createTreeListRec());
-				list.addAll(this.getRightBST().createTreeListRec());
+				this.getLeftBST().createTreeListRec(list);
+				this.getRightBST().createTreeListRec(list);
 			} else if (!this.getRightBST().isEmpty()) {
 				list.add(this.getRightBST().getContent());
-				list.addAll(this.getRightBST().createTreeListRec());
+				this.getRightBST().createTreeListRec(list);
 			} else if (!this.getLeftBST().isEmpty()) {
 				list.add(this.getLeftBST().getContent());
-				list.addAll(this.getLeftBST().createTreeListRec());
+				this.getLeftBST().createTreeListRec(list);
 			} else {
 				list.add(this.getContent());
 			}
 		}
-		return list;
 	}
 	
 

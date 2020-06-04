@@ -72,7 +72,13 @@ public class WorldTests {
 		Assert.assertEquals("{[U(1)], ∅, {[U(1)], ∅, {[D(1)], ∅, ∅}}}", w.toString());		
 	}
 
-	
+	@Test
+	public void testInsertSameNode(){
+		w.insert("", Entity.princesses(1));
+		w.insert("", Entity.dragons(1));
+		w.insert("", Entity.dragons(4));
+		Assert.assertEquals("{[D(5), P(1)], ∅, ∅}", w.toString());
+	}
 
 	//	Contar entidades
 	//
@@ -150,7 +156,18 @@ public class WorldTests {
 		LinkedList<String> lista =  new LinkedList<String>();
 		Assert.assertEquals(w.countAccesiblePrincess(lista),0);
 	}
-	
 
+
+	@Test
+	public void testAccesiblePrincessWithDragonInSameNode(){
+		w.insert("", Entity.dragons(1));
+		w.insert("", Entity.princesses(10));
+		w.insert("1", Entity.dragons(1));
+		w.insert("1", Entity.castles(1));
+		w.insert("1", Entity.princesses(2));
+		LinkedList<String> lista = new LinkedList<String>();
+		Assert.assertEquals(w.countAccesiblePrincess(lista), 2);
+
+	}
 	
 }

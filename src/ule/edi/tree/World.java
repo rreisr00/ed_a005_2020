@@ -136,18 +136,18 @@ public class World extends AbstractBinaryTreeADT<LinkedList<Entity>> {
 			this.setWorldRight(createEmptyWorld());
 		}
 
-		if(address.length() >= 2) {
+		if(address.length() >= 1) {
 			if(this.getContent().isEmpty()) {
-				this.getContent().add(new Entity(0));
+				this.getContent().add(new Entity(Entity.UNKNOWN));
 			}
 			for(int i = 1; i < address.length(); i++){
 				nextAddress = nextAddress + address.charAt(i);
 			}
-		}else if(address.equals("")){
+		}else{
 			if(this.getContent().contains(e)){
 				int index = 0;
 				long count;
-				while(this.getContent().get(index).equals(e)){
+				while(!this.getContent().get(index).equals(e)){
 					index++;
 				}
 				count = this.getContent().get(index).getCount();
@@ -156,11 +156,12 @@ public class World extends AbstractBinaryTreeADT<LinkedList<Entity>> {
 				this.getContent().add(e);
 			}
 		}
-
-		if(address.charAt(0) == '0'){
-			this.getWorldLeft().insert(nextAddress, e);
-		}else if(address.charAt(0) == '1'){
-			this.getWorldRight().insert(nextAddress, e);
+		if(!address.equals("")) {
+			if (address.charAt(0) == '0') {
+				this.getWorldLeft().insert(nextAddress, e);
+			} else if (address.charAt(0) == '1') {
+				this.getWorldRight().insert(nextAddress, e);
+			}
 		}
 	}
 
@@ -180,10 +181,10 @@ public class World extends AbstractBinaryTreeADT<LinkedList<Entity>> {
 		if(!this.isEmpty()){
 			if(this.getContent().contains(thisEntity)){
 				int index = 0;
-				while(this.getContent().get(index).equals(thisEntity)){
+				while(!this.getContent().get(index).equals(thisEntity)){
 					index++;
 				}
-				count = this.getContent().get(index).getCount() + this.getWorldLeft().countEntity(type) + this.getWorldRight().countEntity(type);
+				count += this.getContent().get(index).getCount() + this.getWorldLeft().countEntity(type) + this.getWorldRight().countEntity(type);
 			}else{
 				count += this.getWorldLeft().countEntity(type) + this.getWorldRight().countEntity(type);
 			}
